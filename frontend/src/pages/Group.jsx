@@ -189,9 +189,9 @@ export default function Group() {
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-12 gap-6 relative min-h-[75vh]">
+            <div className="group-grid relative">
                 {/* Left Col: Expenses */}
-                <div className="md:col-span-3 brutal-panel panel-pink flex flex-col overflow-hidden h-[75vh]">
+                <div className="brutal-panel panel-pink flex flex-col overflow-hidden h-[75vh]">
                     <div className="flex justify-between items-center mb-4 border-b-2 border-black pb-2">
                         <h2 className="text-xl font-black">Expenses</h2>
                         {!isAddingExpense && (
@@ -243,7 +243,7 @@ export default function Group() {
                 </div>
 
                 {/* Middle Col: Balances & Settlement */}
-                <div className="md:col-span-5 brutal-panel panel-blue flex flex-col h-[75vh] overflow-y-auto">
+                <div className="brutal-panel panel-blue flex flex-col h-[75vh] overflow-y-auto">
                     <h2 className="text-xl font-black mb-4">Pending Debts</h2>
                     
                     {debts.length === 0 ? (
@@ -316,7 +316,7 @@ export default function Group() {
                 </div>
 
                 {/* Right Col: Live Chat */}
-                <div className="md:col-span-4 brutal-panel panel-cream flex flex-col h-[75vh] overflow-hidden">
+                <div className="brutal-panel panel-cream flex flex-col h-[75vh] overflow-hidden">
                     <h2 className="text-xl font-black mb-4 flex items-center gap-2 border-b-2 border-black pb-2">
                         <MessageSquare size={18} /> Group Chat
                     </h2>
