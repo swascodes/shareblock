@@ -4,6 +4,8 @@ import * as StellarSdk from 'stellar-sdk';
 import { useWallet } from '../context/WalletContext';
 import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 // Using Stellar Testnet
 const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
 
@@ -51,7 +53,7 @@ export default function SettleModal({ debt, groupId, onClose, onSettled }) {
             const response = await server.submitTransaction(signedTransaction);
 
             // 5. Tell the Backend
-            const res = await fetch('http://localhost:3001/api/settlements', {
+            const res = await fetch(`${API_BASE}/api/settlements`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

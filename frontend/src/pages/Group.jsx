@@ -7,8 +7,11 @@ import { ArrowRight, MessageSquare, Plus, CheckCircle } from 'lucide-react';
 import * as StellarSdk from 'stellar-sdk';
 import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const SOCKET_URL = API_BASE.replace(/\/api\/?$/, '');
+
 const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
-const socket = io('http://localhost:3001');
+const socket = io(SOCKET_URL);
 
 export default function Group() {
     const { id } = useParams();
@@ -40,7 +43,7 @@ export default function Group() {
 
     const fetchGroupData = async () => {
         try {
-            const res = await fetch(`http://localhost:3001/api/groups/${id}`);
+            const res = await fetch(`${API_BASE}/api/groups/${id}`);
             if (!res.ok) throw new Error('Group not found');
             const data = await res.json();
             setGroup(data);
@@ -56,7 +59,7 @@ export default function Group() {
 
     const fetchChat = async () => {
         try {
-            const res = await fetch(`http://localhost:3001/api/groups/${id}/chat`);
+            const res = await fetch(`${API_BASE}/api/groups/${id}/chat`);
             const data = await res.json();
             setMessages(data);
         } catch (err) {
@@ -158,7 +161,7 @@ export default function Group() {
         }
 
         try {
-            const res = await fetch('http://localhost:3001/api/expenses', {
+            const res = await fetch(`${API_BASE}/api/expenses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -186,7 +189,7 @@ export default function Group() {
         e.preventDefault();
         if (!newMemberAddress) return;
         try {
-            const res = await fetch(`http://localhost:3001/api/groups/${id}/members`, {
+            const res = await fetch(`${API_BASE}/api/groups/${id}/members`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ address: newMemberAddress })

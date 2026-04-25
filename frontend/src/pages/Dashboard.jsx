@@ -4,6 +4,8 @@ import { useWallet } from '../context/WalletContext';
 import { PlusCircle, Users } from 'lucide-react';
 import { StrKey } from 'stellar-sdk';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 export default function Dashboard() {
     const { address } = useWallet();
     const navigate = useNavigate();
@@ -21,7 +23,7 @@ export default function Dashboard() {
     }, [address]);
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/groups')
+        fetch(`${API_BASE}/api/groups`)
             .then(res => res.json())
             .then(data => {
                 // simple client side filter
@@ -53,7 +55,7 @@ export default function Dashboard() {
         if (!newGroupName || members.length < 1) return;
 
         try {
-            const res = await fetch('http://localhost:3001/api/groups', {
+            const res = await fetch(`${API_BASE}/api/groups`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: newGroupName, members })
