@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { randomUUID, createHash } = require('crypto');
+const { StrKey } = require('stellar-sdk');
 const { dbRun, dbAll, dbGet } = require('./database');
 const { computeBalances } = require('./balanceEngine');
 
@@ -18,6 +19,12 @@ router.post('/groups', async (req, res) => {
         const { name, members } = req.body;
         if (!name || !members || !Array.isArray(members) || members.length < 1) {
             return res.status(400).json({ error: 'Invalid group data' });
+        }
+
+        for (const address of members) {
+            if (!StrKey.isValidEd25519PublicKey(address)) {
+                return res.status(400).json({ error: `Invalid wallet address: ${address}` });
+            }
         }
 
         const groupId = randomUUID();
@@ -87,6 +94,7 @@ router.post('/groups/:id/members', async (req, res) => {
         const { address } = req.body;
         
         if (!address) return res.status(400).json({ error: 'Address required' });
+        if (!StrKey.isValidEd25519PublicKey(address)) return res.status(400).json({ error: 'Invalid wallet address' });
 
         const group = await dbGet('SELECT * FROM groups WHERE id = ?', [groupId]);
         if (!group) return res.status(404).json({ error: 'Group not found' });

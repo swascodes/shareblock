@@ -2,12 +2,30 @@
 
 Shareblock is a full-stack dApp that allows groups to log shared expenses, simplify overlapping debts, and settle natively on the Stellar blockchain using the Freighter wallet.
 
+## 📺 Demo Video
+**Watch the live demonstration here:** [Demo Link](https://youtu.be/5J1HcspLRTA?si=3AqGIKz8_oZ2_UcA)
+
 ## Features
-- **Group Management:** Create groups and add participant wallets.
+- **Group Management:** Create groups and securely add participant wallets with strict validation.
 - **Expense Logging:** Log expenses paid by one person and split equally among the group.
 - **Balance Simplification Engine:** Automatically simplifies O(N^2) debts into minimal transactions (e.g., if A owes B, and B owes C, A just owes C).
-- **On-Chain Settlements:** Sign an XLM payment via Freighter. The transaction hash is stored as verifiable proof of settlement.
-- **WebSocket Chat:** Real-time group chat and transaction notifications.
+- **On-Chain Settlements:** Sign an XLM payment via Freighter. The transaction hash is stored as verifiable proof of settlement and linked natively to the blockchain explorer.
+- **On-Chain Blockchain Chat:** Real-time group chat where every single text message is signed and pushed to the Stellar blockchain via a native Transaction Memo payload.
+- **Garbage Data Prevention:** Strict cryptographic validations rejecting invalid Ed25519 Public Keys from polluting the member arrays.
+- **Neo-Brutalism UI:** A striking, ultra-modern dynamic aesthetic focusing on brutalist boundaries, vibrant yellow canvases, and soft pastel block scaling.
+
+---
+
+## 🔗 Stellar Integration & Contracts
+
+All monetary settlements and chat messaging operations are built directly upon native Stellar operations and rely on exact transaction hashes for immutability.
+
+| Feature / Mechanism | Blockchain Network | Operational Paradigm | Explorer Link |
+| --- | --- | --- | --- |
+| **Settlement Clearing** | Stellar Testnet | Native XLM P2P Transfers | [Stellarchain.io](https://stellarchain.io) |
+| **On-Chain Group Chat** | Stellar Testnet | 0.0000001 XLM Tx + `Memo.text` (Max 28 Bytes) | [Stellarchain.io](https://stellarchain.io) |
+
+*(Note: Click any `View Tx` link inside the dApp to be instantly bridged to the specific transaction on Stellarchain.io)*
 
 ---
 
@@ -35,13 +53,14 @@ This will concurrently start:
 3. Click **"New Group"** and add another test address as a member.
 4. Add an expense (e.g. 100 XLM paid by YOU). It will distribute the debt.
 5. You will see the other member owes you 50 XLM.
-6. Connect as the other member (or simply test out the transaction) and click **"Settle Now"** to trigger a native Stellar payment.
-7. Observe the balances settle to 0 in real-time.
+6. Test out the Chat! Every message will prompt a Freighter signature to store it on-chain.
+7. Connect as the other member (or simply test out the transaction) and click **"Settle Now"** to trigger a native Stellar payment.
+8. Observe the balances settle to 0 in real-time.
 
 ---
 
 ## Tech Stack
-- **Frontend:** React, Vite, Vanilla CSS Modules (Glassmorphism), `@stellar/freighter-api`, `stellar-sdk`.
+- **Frontend:** React, Vite, Vanilla CSS Modules (Neo-Brutalism), `@creit.tech/stellar-wallets-kit`, `stellar-sdk`.
 - **Backend:** Node.js, Express, `sqlite3`, `socket.io`.
 - **Blockchain:** Stellar Testnet.
 
@@ -51,4 +70,4 @@ The SQLite database file `shareblock.db` is auto-generated inside the `backend/`
 ## Caching Strategy
 - Groups, Members, and Expenses are cached off-chain in SQLite.
 - The `balanceEngine` parses expenses and settlements on the fly and simplifies the debt graph.
-- All settlements are logged to the blockchain natively for timestamped immutability.
+- All settlements and chat messages are logged to the blockchain natively for timestamped immutability.

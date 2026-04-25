@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
 import { PlusCircle, Users } from 'lucide-react';
+import { StrKey } from 'stellar-sdk';
 
 export default function Dashboard() {
     const { address } = useWallet();
@@ -11,6 +12,7 @@ export default function Dashboard() {
     const [newGroupName, setNewGroupName] = useState('');
     const [newMember, setNewMember] = useState('');
     const [members, setMembers] = useState([]);
+    const [memberError, setMemberError] = useState('');
 
     useEffect(() => {
         if (address && !members.includes(address)) {
@@ -34,9 +36,15 @@ export default function Dashboard() {
     }, [address]);
 
     const addMember = () => {
-        if (newMember && !members.includes(newMember)) {
+        if (!newMember) return;
+        if (!StrKey.isValidEd25519PublicKey(newMember)) {
+            setMemberError('Invalid Stellar wallet address');
+            return;
+        }
+        if (!members.includes(newMember)) {
             setMembers([...members, newMember]);
             setNewMember('');
+            setMemberError('');
         }
     };
 
@@ -93,10 +101,11 @@ export default function Dashboard() {
                                     className="input-field w-full" 
                                     placeholder="G..." 
                                     value={newMember} 
-                                    onChange={e => setNewMember(e.target.value)} 
+                                    onChange={e => { setNewMember(e.target.value); setMemberError(''); }} 
                                 />
                                 <button type="button" className="btn btn-outline" onClick={addMember}>Add</button>
                             </div>
+                            {memberError && <div className="text-danger text-xs font-bold mt-1">{memberError}</div>}
                         </div>
 
                         <div className="flex gap-2 flex-wrap mb-4 mt-2">

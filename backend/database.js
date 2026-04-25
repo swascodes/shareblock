@@ -71,10 +71,14 @@ const db = new sqlite3.Database(dbPath, (err) => {
           group_id TEXT,
           sender TEXT,
           message TEXT,
+          tx_hash TEXT,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (group_id) REFERENCES groups (id)
         )
       `);
+      
+      // Patch for existing databases
+      db.run(`ALTER TABLE chat_messages ADD COLUMN tx_hash TEXT;`, () => {});
     });
   }
 });

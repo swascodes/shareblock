@@ -4,7 +4,10 @@ import { useWallet } from '../context/WalletContext';
 import io from 'socket.io-client';
 import SettleModal from '../components/SettleModal';
 import { ArrowRight, MessageSquare, Plus, CheckCircle } from 'lucide-react';
+import * as StellarSdk from 'stellar-sdk';
+import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
 
+const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
 const socket = io('http://localhost:3001');
 
 export default function Group() {
@@ -95,11 +98,55 @@ export default function Group() {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const sendChatMessage = (e) => {
+    const [isSendingChat, setIsSendingChat] = useState(false);
+
+    const sendChatMessage = async (e) => {
         e.preventDefault();
         if (!chatMsg.trim() || !address) return;
-        socket.emit('send_message', { group_id: id, sender: address, message: chatMsg });
-        setChatMsg('');
+        
+        setIsSendingChat(true);
+        try {
+            // Send a tiny transaction to self to embed the chat in the Memo
+            const account = await server.loadAccount(address);
+            
+            const transaction = new StellarSdk.TransactionBuilder(account, {
+                fee: StellarSdk.BASE_FEE,
+                networkPassphrase: StellarSdk.Networks.TESTNET
+            })
+            .addOperation(StellarSdk.Operation.payment({
+                destination: address,
+                asset: StellarSdk.Asset.native(),
+                amount: "0.0000001"
+            }))
+            .addMemo(StellarSdk.Memo.text(chatMsg))
+            .setTimeout(30)
+            .build();
+
+            // Sign using Freighter
+            const { signedTxXdr } = await StellarWalletsKit.signTransaction(transaction.toXDR(), {
+                networkPassphrase: Networks.TESTNET,
+                address: address
+            });
+
+            // Submit to Horizon
+            const signedTransaction = StellarSdk.TransactionBuilder.fromXDR(signedTxXdr, StellarSdk.Networks.TESTNET);
+            const response = await server.submitTransaction(signedTransaction);
+
+            // Now emit the message to the backend via sockets, including tx_hash
+            socket.emit('send_message', { 
+                group_id: id, 
+                sender: address, 
+                message: chatMsg,
+                tx_hash: response.hash
+            });
+            
+            setChatMsg('');
+        } catch (err) {
+            console.error("Failed to send on-chain chat:", err);
+            alert("Chat transaction failed. " + (err.message || ''));
+        } finally {
+            setIsSendingChat(false);
+        }
     };
 
     const submitExpense = async (e) => {
@@ -163,9 +210,9 @@ export default function Group() {
             <div className="flex justify-between items-end border-b-4 border-black pb-4 mb-2">
                 <div>
                     <h1 className="text-3xl text-black font-black">{group.name}</h1>
-                    <div className="flex gap-2 mt-2 items-center flex-wrap">
+                    <div className="flex gap-2 mt-2 items-center flex-wrap break-words max-w-full">
                         {group.members.map(m => (
-                            <span key={m} className={`address-pill text-xs ${m === address ? 'border-primary text-primary' : ''}`}>
+                            <span key={m} className={`address-pill text-xs break-all ${m === address ? 'border-primary text-primary' : ''}`}>
                                 {m === address ? 'You' : truncateAddress(m)}
                             </span>
                         ))}
@@ -326,10 +373,21 @@ export default function Group() {
                         {messages.map((m, i) => {
                             const isMe = m.sender === address;
                             return (
-                                <div key={i} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                <div key={i} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-1`}>
+                                    {!isMe && <span className="text-[10px] text-black font-bold ml-1 mb-[2px]">{truncateAddress(m.sender)}</span>}
                                     <div className={`chat-message text-sm ${isMe ? 'chat-self' : 'chat-other'}`}>
                                         {m.message}
                                     </div>
+                                    {m.tx_hash && (
+                                        <a 
+                                            href={`https://stellarchain.io/transactions/${m.tx_hash}`} 
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="text-[8px] text-blue-600 border-b border-blue-600 mt-1 opacity-60"
+                                            style={{ textDecoration: 'none' }}
+                                        >
+                                            View Tx
+                                        </a>
+                                    )}
                                 </div>
                             );
                         })}
@@ -340,12 +398,15 @@ export default function Group() {
                         <input 
                             className="input-field flex-1" 
                             type="text" 
-                            placeholder={address ? "Type a message..." : "Connect wallet to chat"} 
+                            placeholder={address ? "Type a message (max 28 chars)..." : "Connect wallet to chat"} 
                             value={chatMsg} 
                             onChange={e => setChatMsg(e.target.value)} 
-                            disabled={!address}
+                            disabled={!address || isSendingChat}
+                            maxLength={28}
                         />
-                        <button type="submit" className="btn btn-mint bg-[var(--panel-bg-2)] border-2 border-black shadow-[3px_3px_0px_#000] text-black font-bold" disabled={!address}>Send</button>
+                        <button type="submit" className="btn btn-mint bg-[var(--panel-bg-2)] border-2 border-black shadow-[3px_3px_0px_#000] text-black font-bold" disabled={!address || isSendingChat}>
+                            {isSendingChat ? '...' : 'Send'}
+                        </button>
                     </form>
                 </div>
             </div>

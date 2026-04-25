@@ -29,11 +29,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on('send_message', async (data) => {
-        const { group_id, sender, message } = data;
+        const { group_id, sender, message, tx_hash } = data;
         
         try {
-            await dbRun('INSERT INTO chat_messages (group_id, sender, message) VALUES (?, ?, ?)', [group_id, sender, message]);
-            io.to(group_id).emit('receive_message', { group_id, sender, message, created_at: new Date() });
+            await dbRun('INSERT INTO chat_messages (group_id, sender, message, tx_hash) VALUES (?, ?, ?, ?)', [group_id, sender, message, tx_hash]);
+            io.to(group_id).emit('receive_message', { group_id, sender, message, tx_hash, created_at: new Date() });
         } catch (err) {
             console.error('Failed to save message:', err);
         }
