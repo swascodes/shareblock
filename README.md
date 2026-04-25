@@ -1,20 +1,15 @@
-# Shareblock - On-Chain Expense Splitter (Stellar Edition)
+# Shareblock - On-Chain Expense Splitter 
 
 Shareblock is a full-stack dApp that allows groups to log shared expenses, simplify overlapping debts, and settle natively on the Stellar blockchain using the Freighter wallet.
 
+<img width="1860" height="858" alt="image" src="https://github.com/user-attachments/assets/b2ed090c-f274-4531-912f-b059d9d168b0" />
+
 ## 📺 Demo Video
-**Watch the live demonstration here:** [Demo Link](https://youtu.be/5J1HcspLRTA?si=3AqGIKz8_oZ2_UcA)
+**Watch the live demonstration here->** [Watch on youtube]( https://youtu.be/5J1HcspLRTA?si=3AqGIKz8_oZ2_UcA)
 
-## Features
-- **Group Management:** Create groups and securely add participant wallets with strict validation.
-- **Expense Logging:** Log expenses paid by one person and split equally among the group.
-- **Balance Simplification Engine:** Automatically simplifies O(N^2) debts into minimal transactions (e.g., if A owes B, and B owes C, A just owes C).
-- **On-Chain Settlements:** Sign an XLM payment via Freighter. The transaction hash is stored as verifiable proof of settlement and linked natively to the blockchain explorer.
-- **On-Chain Blockchain Chat:** Real-time group chat where every single text message is signed and pushed to the Stellar blockchain via a native Transaction Memo payload.
-- **Garbage Data Prevention:** Strict cryptographic validations rejecting invalid Ed25519 Public Keys from polluting the member arrays.
-- **Neo-Brutalism UI:** A striking, ultra-modern dynamic aesthetic focusing on brutalist boundaries, vibrant yellow canvases, and soft pastel block scaling.
+## Glimpse inside the group:
 
----
+<img width="1854" height="869" alt="image" src="https://github.com/user-attachments/assets/4261d4aa-0ce1-4a33-a803-c7a8544996f7" />
 
 ## 🔗 Stellar Integration & Contracts
 
@@ -29,7 +24,20 @@ All monetary settlements and chat messaging operations are built directly upon n
 
 ---
 
-## 🚀 Quick Start (60 Second Demo)
+## Features
+- **Group Management:** Create groups and securely add participant wallets with strict validation.
+- **Expense Logging:** Log expenses paid by one person and split equally among the group.
+- **Balance Simplification Engine:** Automatically simplifies O(N^2) debts into minimal transactions (e.g., if A owes B, and B owes C, A just owes C).
+- **On-Chain Settlements:** Sign an XLM payment via Freighter. The transaction hash is stored as verifiable proof of settlement and linked natively to the blockchain explorer.
+- **On-Chain Blockchain Chat:** Real-time group chat where every single text message is signed and pushed to the Stellar blockchain via a native Transaction Memo payload.
+- **Garbage Data Prevention:** Strict cryptographic validations rejecting invalid Ed25519 Public Keys from polluting the member arrays.
+- **Neo-Brutalism UI:** A striking, ultra-modern dynamic aesthetic focusing on brutalist boundaries, vibrant yellow canvases, and soft pastel block scaling.
+
+---
+
+
+
+## 🚀 Quick Start 
 
 ### 1. Requirements
 - Node.js installed
