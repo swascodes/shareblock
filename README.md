@@ -2,8 +2,11 @@
 
 Shareblock is a full-stack dApp that allows groups to log shared expenses, simplify overlapping debts, and settle natively on the Stellar blockchain using the Freighter wallet.
 
-## 📺 Demo Video
-**Watch the live demonstration here->** [Watch on youtube]( https://youtu.be/5J1HcspLRTA?si=3AqGIKz8_oZ2_UcA)
+**Play with the live dApp here:** [https://shareblock-drab.vercel.app/](https://shareblock-drab.vercel.app/)
+
+## 📺 Live Deployment & Demo
+**Live dApp URL:** [shareblock-drab.vercel.app](https://shareblock-drab.vercel.app/)  
+**Watch the live demonstration here->** [Watch on youtube](https://youtu.be/5J1HcspLRTA?si=3AqGIKz8_oZ2_UcA)
 ##
 
 
