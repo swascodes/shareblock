@@ -2,6 +2,9 @@
   "name": "shareblock",
   "version": "1.0.0",
   "description": "On-Chain Expense Splitter (Stellar Edition)",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && npm install && node server.js",
