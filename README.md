@@ -2,13 +2,16 @@
 
 Shareblock is a full-stack dApp that allows groups to log shared expenses, simplify overlapping debts, and settle natively on the Stellar blockchain using the Freighter wallet.
 
-<img width="1860" height="858" alt="image" src="https://github.com/user-attachments/assets/b2ed090c-f274-4531-912f-b059d9d168b0" />
-
 ## 📺 Demo Video
 **Watch the live demonstration here->** [Watch on youtube]( https://youtu.be/5J1HcspLRTA?si=3AqGIKz8_oZ2_UcA)
 
-## Glimpse inside the group:
 
+
+## 🚀 Snaps:
+
+<img width="1860" height="858" alt="image" src="https://github.com/user-attachments/assets/b2ed090c-f274-4531-912f-b059d9d168b0" />
+
+## 
 <img width="1854" height="869" alt="image" src="https://github.com/user-attachments/assets/4261d4aa-0ce1-4a33-a803-c7a8544996f7" />
 
 ## 🔗 Stellar Integration & Contracts
