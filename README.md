@@ -10,9 +10,18 @@ Shareblock is a **fully decentralized** dApp for managing shared expenses and se
 ## 📸 Snaps
 
 <img width="1859" height="832" alt="image" src="https://github.com/user-attachments/assets/f39c45b8-3426-46c9-848b-ded2adad3681" />
-###
+
+
+---    
+
+
 <img width="1851" height="858" alt="image" src="https://github.com/user-attachments/assets/372b7572-42f1-485d-8046-1452333e1308" />
 
+---    
+<img width="1859" height="851" alt="image" src="https://github.com/user-attachments/assets/87294796-93c7-4e05-bbc9-8a24fadc85a3" />
+
+---
+<img width="1844" height="845" alt="image" src="https://github.com/user-attachments/assets/8472082d-ea71-47f9-91c3-9ddc1ba2066a" />
 
 ---
 
