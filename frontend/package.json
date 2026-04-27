@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "cd src/contracts/shareblock && npm install && npm run build && cd ../../.. && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

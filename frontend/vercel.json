@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd src/contracts/shareblock && npm install && npm run build && cd ../../.. && vite build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
