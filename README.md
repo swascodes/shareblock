@@ -1,4 +1,4 @@
-# Shareblock — 100% On-Chain Expense Splitter ⛓️
+# Shareblock —  On-Chain Expense Splitter ⛓️
 
 Shareblock is a **fully decentralized** dApp for managing shared expenses and settling debts natively on the **Stellar blockchain** using **Soroban smart contracts**. There is no centralized backend, database, or server — all state lives on-chain.
 
@@ -9,9 +9,10 @@ Shareblock is a **fully decentralized** dApp for managing shared expenses and se
 
 ## 📸 Snaps
 
-<img width="1860" height="858" alt="Dashboard" src="https://github.com/user-attachments/assets/b2ed090c-f274-4531-912f-b059d9d168b0" />
+<img width="1859" height="832" alt="image" src="https://github.com/user-attachments/assets/f39c45b8-3426-46c9-848b-ded2adad3681" />
+###
+<img width="1851" height="858" alt="image" src="https://github.com/user-attachments/assets/372b7572-42f1-485d-8046-1452333e1308" />
 
-<img width="1854" height="869" alt="Group View" src="https://github.com/user-attachments/assets/4261d4aa-0ce1-4a33-a803-c7a8544996f7" />
 
 ---
 
