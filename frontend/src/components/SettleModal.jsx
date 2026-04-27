@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-// Using stellar-sdk for constructing the Transaction XDR
-import * as StellarSdk from 'stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 import { useWallet } from '../context/WalletContext';
-import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
+import { Client } from 'shareblock';
+import { signWithFreighter, NETWORK_PASSPHRASE } from '../utils/signer';
+import { signTransaction as freighterSign } from '@stellar/freighter-api';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
-// Using Stellar Testnet
 const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
+
+const contract = new Client({
+    networkPassphrase: NETWORK_PASSPHRASE,
+    contractId: 'CDBSJWLOVS2FT25PTGGI4QW2R2K3DXUF62WSQH7U5GLHTLKLIESELUEC',
+    rpcUrl: 'https://soroban-testnet.stellar.org'
+});
 
 export default function SettleModal({ debt, groupId, onClose, onSettled }) {
     const { address } = useWallet();
@@ -28,7 +32,7 @@ export default function SettleModal({ debt, groupId, onClose, onSettled }) {
             const randomHex = Array.from(window.crypto.getRandomValues(new Uint8Array(32)))
                 .map(b => b.toString(16).padStart(2, '0')).join('');
 
-            // 2. Build Transaction
+            // 2. Build Transaction for XLM Payment
             const transaction = new StellarSdk.TransactionBuilder(account, {
                 fee: StellarSdk.BASE_FEE,
                 networkPassphrase: StellarSdk.Networks.TESTNET
@@ -42,40 +46,38 @@ export default function SettleModal({ debt, groupId, onClose, onSettled }) {
             .setTimeout(30)
             .build();
 
-            // 3. Request Signature from Wallet Kit
-            const { signedTxXdr } = await StellarWalletsKit.signTransaction(transaction.toXDR(), {
-                networkPassphrase: Networks.TESTNET,
-                address: debt.from
+            // 3. Sign the payment with Freighter directly
+            const signResult = await freighterSign(transaction.toXDR(), {
+                networkPassphrase: NETWORK_PASSPHRASE,
+                accountToSign: address,
             });
+            if (signResult.error) throw new Error(signResult.error.message || String(signResult.error));
+            if (!signResult.signedTxXdr) throw new Error('Freighter returned no signed XDR');
 
-            // 4. Submit to Horizon
-            const signedTransaction = StellarSdk.TransactionBuilder.fromXDR(signedTxXdr, StellarSdk.Networks.TESTNET);
-            const response = await server.submitTransaction(signedTransaction);
+            // 4. Submit to Horizon and capture the tx hash
+            const signedTx = StellarSdk.TransactionBuilder.fromXDR(signResult.signedTxXdr, StellarSdk.Networks.TESTNET);
+            const horizonResponse = await server.submitTransaction(signedTx);
+            const txHash = horizonResponse.hash;
 
-            // 5. Tell the Backend
-            const res = await fetch(`${API_BASE}/api/settlements`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    group_id: groupId,
-                    from_address: debt.from,
-                    to_address: debt.to,
-                    amount: debt.amount,
-                    tx_hash: response.hash
-                })
+            // 5. Log the settlement on-chain with tx_hash for history & explorer linking
+            const stroops = BigInt(Math.round(parseFloat(debt.amount) * 10000000));
+            const tx = await contract.log_settlement({ 
+                group_id: Number(groupId), 
+                from: debt.from, 
+                to: debt.to, 
+                amount: stroops,
+                tx_hash: txHash,
+            }, { publicKey: address });
+            await tx.signAndSend({
+                signTransaction: (xdr) => signWithFreighter(xdr, address)
             });
-
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.error || 'Failed to sync settlement with backend');
-            }
 
             onSettled();
             onClose();
 
         } catch (err) {
             console.error(err);
-            setError(err.message || 'Transaction failed. Check account balances on Testnet.');
+            setError(err.message || 'Transaction failed. Check your Testnet balance.');
         } finally {
             setLoading(false);
         }
@@ -96,6 +98,10 @@ export default function SettleModal({ debt, groupId, onClose, onSettled }) {
                     </div>
                 </div>
 
+                <div className="text-xs text-muted mb-4 bg-black/10 p-2 rounded border border-black/20">
+                    ℹ️ This will prompt <strong>2 wallet signatures</strong>: the XLM payment, then the on-chain settlement record.
+                </div>
+
                 {error && <div className="text-danger bg-red-900/20 p-3 rounded-md mb-4 text-sm">{error}</div>}
 
                 <div className="flex gap-4">
@@ -104,7 +110,7 @@ export default function SettleModal({ debt, groupId, onClose, onSettled }) {
                         onClick={settleWithFreighter} 
                         disabled={loading}
                     >
-                        {loading ? 'Confirming in Wallet...' : 'Sign with Wallet'}
+                        {loading ? 'Signing with Freighter...' : 'Settle with Freighter'}
                     </button>
                     <button className="btn btn-outline w-full" onClick={onClose} disabled={loading}>
                         Cancel

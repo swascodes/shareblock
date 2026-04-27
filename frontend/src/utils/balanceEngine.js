@@ -79,4 +79,4 @@ function computeBalances(expenses, expense_participants, settlements) {
     return { balances, debts: simplifiedDebts };
 }
 
-module.exports = { computeBalances };
+export { computeBalances };

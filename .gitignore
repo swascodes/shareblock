@@ -3,6 +3,8 @@ node_modules/
 dist/
 build/
 .env
+.env.local
+.env.*.local
 
 # Logs
 logs
@@ -10,6 +12,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # OS specific
 .DS_Store
@@ -21,9 +24,6 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Database
-backend/shareblock.db
-
 # IDE / Editors
 .vscode/
 .idea/
@@ -33,6 +33,13 @@ backend/shareblock.db
 *.sln
 *.sw?
 
+# Rust / Soroban build artifacts
+contracts/shareblock/target/
+
 # Caches
-.vite
+.vite/
 .eslintcache
+frontend/.vite/
+
+# Stellar CLI
+.stellar/

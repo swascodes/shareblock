@@ -2,10 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
 import { PlusCircle, Users } from 'lucide-react';
-import { StrKey } from 'stellar-sdk';
+import { StrKey } from '@stellar/stellar-sdk';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+import { Client } from 'shareblock';
+import { signWithFreighter } from '../utils/signer';
 
+const contract = new Client({
+    networkPassphrase: 'Test SDF Network ; September 2015',
+    contractId: 'CDBSJWLOVS2FT25PTGGI4QW2R2K3DXUF62WSQH7U5GLHTLKLIESELUEC',
+    rpcUrl: 'https://soroban-testnet.stellar.org'
+});
 export default function Dashboard() {
     const { address } = useWallet();
     const navigate = useNavigate();
@@ -23,18 +29,25 @@ export default function Dashboard() {
     }, [address]);
 
     useEffect(() => {
-        fetch(`${API_BASE}/api/groups`)
-            .then(res => res.json())
-            .then(data => {
-                // simple client side filter
-                if (address) {
-                    // Ideally the backend filters by member, but for MVP we fetch all and filter or just show all
-                    setGroups(data);
-                } else {
-                    setGroups(data); // show public groups for demo
+        const loadGroups = async () => {
+            let id = 1;
+            let loaded = [];
+            while(true) {
+                try {
+                    const tx = await contract.get_group({ group_id: id });
+                    if (tx.result && tx.result.name) {
+                        loaded.push({ id, name: tx.result.name, members: tx.result.members, created_at: Date.now() });
+                        id++;
+                    } else {
+                        break;
+                    }
+                } catch (e) {
+                    break;
                 }
-            })
-            .catch(console.error);
+            }
+            setGroups(loaded);
+        };
+        loadGroups();
     }, [address]);
 
     const addMember = () => {
@@ -55,15 +68,16 @@ export default function Dashboard() {
         if (!newGroupName || members.length < 1) return;
 
         try {
-            const res = await fetch(`${API_BASE}/api/groups`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: newGroupName, members })
+            const tx = await contract.create_group({ name: newGroupName, creator: address }, { publicKey: address });
+            const groupId = await tx.signAndSend({
+                signTransaction: (xdr) => signWithFreighter(xdr, address)
             });
-            const data = await res.json();
-            navigate(`/group/${data.id}`);
+            
+            // Navigate to the new group
+            navigate(`/group/${groupId.result || groups.length + 1}`);
         } catch (err) {
             console.error('Failed to create group', err);
+            alert("Transaction failed: " + err.message);
         }
     };
 
